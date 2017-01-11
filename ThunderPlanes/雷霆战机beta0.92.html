@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>雷霆战机beta0.92（修复子弹BUG）</title>
+	<link rel="stylesheet" href="reset.css">
+	<style>
+		html {
+			background: skyblue;
+		}
+		.wrap {
+			margin: 0 auto;
+		}
+		.wrap .world {
+			overflow: hidden;
+			position: relative;
+			margin: 30px auto;
+			width: 600px;
+			height: 860px;
+			background: url("images/bg1.jpg") 0 -20px;
+			background-size: 100%;
+			border-radius: 5px;
+		}
+		.world .gamestart {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			background: url("images/gamestart.png") 0 0 no-repeat;
+			background-size: 100%;
+			z-index: 1;
+		}
+		.gamestart .startbox {
+			position: absolute;
+			top: 590px;
+			left: 230px;
+		}
+		.gamestart .startbox span {
+			display: block;
+			padding: 5px 10px;
+			font-size: 32px;
+			color: white;
+			cursor: pointer;
+		}
+		.gamestart span:hover {
+			color: #f93;
+		}
+		.world .thunderPlane {
+			position: absolute;
+			top: 600px; 
+			left: 280px;
+			width: 60px;
+			height: 60px;
+			background: url("images/ThunderPlane.png") -89px 0 no-repeat;
+			background-size: 400%;
+		}
+
+		.world .enemyPlane span {
+			display: block;
+			position: absolute;
+			top: 100px;
+			left: 280px;
+			width: 50px;
+			height: 40px;
+			background: url("images/enemyPlane1.png") 0 0 no-repeat;
+			background-size: contain;
+		}
+		.world .enemyPlane em {
+			display: block;
+			position: absolute;
+			top: 0px;
+			left: 20px;
+			width: 40px;
+			height: 40px;
+			background: url("images/enemyPlane2.png") 0 0 no-repeat;
+			background-size: 342%;
+		}
+		.world .enemyPlane strong {
+			display: block;
+			position: absolute;
+			top: 0px;
+			left: 20px;
+			width: 40px;
+			height: 60px;
+			background: url("images/enemyPlane3.png") 0 0 no-repeat;
+			background-size: contain;
+		}
+		.world .thunderBullet span {
+			display: block;
+			position: absolute;
+			left: -500px;
+			width: 8px;
+			height: 20px;
+			background: url("images/bullets.png") 0 0 no-repeat;
+			background-size: contain;
+		}
+		.world .enemyBullet span {
+			display: block;
+			position: absolute;
+			top: -100px;
+			left: 0;
+			width: 10px;
+			height: 10px;
+			background: url("images/enemyBullets1.png") 0 0 no-repeat;
+			background-size: cover;
+		}
+		.world .enemyBullet em {
+			display: block;
+			position: absolute;
+			top: -100px;
+			left: 0;
+			width: 10px;
+			height: 10px;
+			background: url("images/enemyBullets2.png") 0 0 no-repeat;
+			background-size: cover;
+		}
+		.world .enemyBullet strong {
+			display: block;
+			position: absolute;
+			top: -100px;
+			left: 0;
+			width: 10px;
+			height: 10px;
+			background: url("images/enemyBullets3.png") 0 0 no-repeat;
+			background-size: cover;
+		}
+		.world p {
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 100px;
+			height: 30px;
+			line-height: 30px;
+			text-align: center;
+			font-family: "New York";
+			font-size: 32px;
+			font-weight: bold;
+			color: white;
+		}
+		.world ul {
+			position: absolute;
+			width: 150px;
+			height: 30px;
+			bottom: 0px;
+			left: 0px;
+		}
+		ul li {
+			float: left;
+			width: 30px;
+			height: 30px;
+			background: url("images/thunderHP.png") 0 0 no-repeat;
+			background-size: contain;
+		}
+		.world .gameover {
+			display: none;
+			position: relative;
+			width: 100%;
+			height: 100%;
+			background: url("images/gameover.png") 0 0 no-repeat;
+			background-size: 100%;
+		}
+		.gameover .endbox {
+			position: absolute;
+			top: 350px;
+			left: 230px;
+		}
+		.gameover .endbox span {
+			display: block;
+			padding: 5px 10px;
+			font-size: 32px;
+			color: white;
+			cursor: pointer;
+		}
+		.gameover span:hover {
+			color: #f93;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<div class="world" id="worlds">
+			<!-- <div class="gamestart" id="gamestarts">
+				<div class="startbox">
+					<span id="start">开始游戏</span>
+					<span id="goals">最高分数</span>
+				</div>
+			</div> -->
+			<div class="thunderPlane" id="thunderPlanes"></div>
+			<div class="thunderBullet" id="thunderBullets">
+
+			</div>
+			<div class="enemyPlane" id="enemyPlanes">
+
+			</div>
+			<div class="enemyBullet" id="enemyBullets">
+
+			</div>
+			<ul>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
+			<p id="score">0</p>
+			<div class="gameover" id="gameovers">
+				<div class="endbox">
+					<span id="restart">重新开始</span>
+					<span id="goals">最高分数</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="js/core.js"></script>
+	<script>
+
+		//创建游戏世界
+		function mainGaming(worldEle, bgPosY) {
+			var background_this = this;
+			this.worldEle = document.getElementById(worldEle);										//创建主画面
+			this.bgPosY = bgPosY;  												   					//设置背景图片初始位置
+			this.backgroundTimer = setInterval(function() {
+				background_this.backgroudMove();
+			}, 16);
+		}
+
+		mainGaming.prototype.backgroudMove = function() {
+
+			//设置背景图片的滚动
+			this.worldEle.style.background = "url(images/bg1.jpg) 0 " + this.bgPosY + "px";
+			this.bgPosY++;
+			if(this.bgPosY >= 854) {
+				this.bgPosY = 0;
+			}
+		}
+		//设置雷霆战机的基本值
+		function ThunderPlane(thunderPlaneEle, thunderHP, thunderBomb, thunderPlaneMaxX, thunderPlaneMaxY, thunderBulletsEle, thunderBulletEle, thunderBulletSpeed) {
+			var thunderPlane_this = this;
+			this.thunderPlaneEle = document.getElementById(thunderPlaneEle);
+			this.thunderPlaneWidth = this.thunderPlaneEle.offsetWidth;								//获取雷霆战机的宽度
+			this.thunderPlaneHeight = this.thunderPlaneEle.offsetHeight;							//获取雷霆战机的高度
+			this.thunderHP = thunderHP;																//设置雷霆战机的生命值
+			this.thunderBomb = thunderBomb;															//设置雷霆战机的炸弹数量
+			this.thunderSpeedX = 0;																	//初始雷霆战机的X轴速度
+			this.thunderSpeedY = 0;																	//初始雷霆战机的Y轴速度
+			this.thunderPlaneMaxX = thunderPlaneMaxX - this.thunderPlaneEle.clientWidth;			//获取雷霆战机的最大宽度
+			this.thunderPlaneMaxY = thunderPlaneMaxY - this.thunderPlaneEle.clientHeight;			//获取雷霆战机的最大高度
+
+			this.thunderBulletsEles = document.getElementById(thunderBulletsEle);
+			this.thunderBulletEle = thunderBulletEle;												//获取雷霆战机子弹的标签
+			this.thunderBulletSpeed = thunderBulletSpeed;											//获取雷霆战机子弹的速度
+
+			//获取雷霆战机的初始位置
+			this.thunderPosX = parseInt(getStyle(thunderPlane_this.thunderPlaneEle, "left"));
+			this.thunderPosY = parseInt(getStyle(thunderPlane_this.thunderPlaneEle, "top"));
+
+			//设置雷霆战机的生命值
+			setThunderHP(this.thunderHP);
+
+			//控制战机的移动
+			document.onkeydown = function(e) {
+				thunderPlane_this.thunderPlaneDirection(e);
+			}
+
+			//使战机持续运动
+			this.thunderTimer = setInterval(function() {
+				thunderPlane_this.thunderPlaneMove(this.thunderPlaneMaxX, this.thunderPlaneMaxY);
+			}, 16);
+		}
+
+		//设置雷霆战机的方向
+		ThunderPlane.prototype.thunderPlaneDirection = function(e) {
+			this.thunderDirection = -1;                                 			//改变雷霆战机的方向
+
+			if(e.keyCode == 65 || e.keyCode == 37) {
+				this.thunderSpeedX = 3;
+				this.thunderSpeedY = 0;
+				if(this.thunderSpeedX > 0) {
+					this.thunderSpeedX = this.thunderSpeedX * this.thunderDirection;
+				}
+			}
+			if(e.keyCode == 68 || e.keyCode == 39) {
+				this.thunderSpeedX = 3;
+				this.thunderSpeedY = 0;
+				if(this.thunderSpeedX < 0) {
+					this.thunderSpeedX = this.thunderSpeedX * this.thunderDirection;
+				}
+			}
+			if(e.keyCode == 87 || e.keyCode == 38) {
+				this.thunderSpeedX = 0;
+				this.thunderSpeedY = 3;
+				if(this.thunderSpeedY > 0) {
+					this.thunderSpeedY = this.thunderSpeedY * this.thunderDirection;
+				}
+			}
+			if(e.keyCode == 83 || e.keyCode == 40) {
+				this.thunderSpeedX = 0;
+				this.thunderSpeedY = 3;
+				if(this.thunderSpeedY < 0) {
+					this.thunderSpeedY = this.thunderSpeedY * this.thunderDirection;
+				}
+			}
+		}
+
+		//设置雷霆战机的移动
+		ThunderPlane.prototype.thunderPlaneMove = function(thunderPlaneMaxX, thunderPlaneMaxY) {
+			this.thunderPosX += this.thunderSpeedX;
+			this.thunderPosY += this.thunderSpeedY;
+			if(this.thunderPosX <= 0) {
+				this.thunderPosX = 0;
+			}
+			if(this.thunderPosX >= this.thunderPlaneMaxX) {
+				this.thunderPosX = this.thunderPlaneMaxX;
+			}
+			if(this.thunderPosY <= 0) {
+				this.thunderPosY = 0;
+			} else if(this.thunderPosY >= this.thunderPlaneMaxY) {
+				this.thunderPosY = this.thunderPlaneMaxY;
+			}
+			this.thunderPlaneEle.style.left = this.thunderPosX + "px";
+			this.thunderPlaneEle.style.top = this.thunderPosY + "px";
+		}
+
+
+		//雷霆战机发射子弹
+		ThunderPlane.prototype.thunderPlaneBulletMove = function(e) {
+
+			this.myPlaneBullet = [];
+			if(e.keyCode == 74 || e.keyCode == 32) {
+				this.thunderBulletElement = document.createElement(this.thunderBulletEle);
+				this.thunderBulletsEles.appendChild(this.thunderBulletElement);
+				this.thunderBulletLen = this.thunderBulletsEles.getElementsByTagName(this.thunderBulletEle).length;
+
+				//敌机与子弹碰撞拿不到子弹坐标
+				this.myPlaneBullet[this.thunderBulletLen - 1] = new thunderBullet(this.thunderBulletSpeed, this.thunderPlaneEle, this.thunderBulletElement, this.thunderBulletsEles);
+
+				// 敌机与子弹的碰撞检测
+			}
+		}
+
+		//雷霆战机子弹的基本值
+		function thunderBullet(thunderBulletSpeed, thunderPlaneEle, thunderBulletElement, thunderBulletsEles) {
+			var thunderBullet_this = this;
+
+			this.thunderPlaneEle = thunderPlaneEle;
+			this.thunderBulletSpeed = thunderBulletSpeed;
+			this.thunderBulletsEles = thunderBulletsEles;
+			this.thunderBulletElement = thunderBulletElement;
+
+			//设置雷霆战机子弹的初始位置
+			this.thunderBulletPosX = thunderPlaneEle.offsetLeft + 25;
+			this.thunderBulletPosY = thunderPlaneEle.offsetTop;
+
+			//使每个雷霆战机子弹持续运动
+			this.thunderBulletTimer = setInterval(function() {
+				thunderBullet_this.thunderBulletMove(thunderBulletElement, thunderBulletsEles);
+			}, 16);
+
+			// //子弹碰撞敌机检测
+			// new ThunderBulletImpactEnemyPlane(thunderBullet_this.thunderBulletSpeed, thunderBullet_this.thunderPlaneEle, thunderBullet_this.ElementBulletsEle, thunderBulletElement, EnemyPlanesNum, EnemyPlanes, enemyHP, url, size);
+		}
+
+		//封装雷霆战机的各个子弹是否有触碰到敌机
+		function ThunderBulletImpactEnemyPlane(ElementBulletsSpeed, thunderPlaneEle, ElementBulletsEle, ElementBulletEle, EnemyPlanesNum, EnemyPlanes, enemyHP, url, size) {
+
+			//当有子弹的时候才执行子弹与敌机的检测
+			// for(var i = 0; i < this.ElementBulletEle.length; i++) {
+			// 	for(var j = 0; j < EnemyPlanesNum; j++) {
+			// 		// console.log(this.myPlaneBullet[i].thunderBulletPosX)
+			// 		//雷霆战机子弹和敌机的碰撞检测
+			// 		if(this.myPlaneBullet[i].thunderBulletPosX >= EnemyPlanes[j].enemyPosX && this.myPlaneBullet[i].thunderBulletPosX <= EnemyPlanes[j].enemyPosX + EnemyPlanes[j].enemyWidth) {
+			// 			if(this.myPlaneBullet[i].thunderBulletPosY >= EnemyPlanes[j].enemyPosY && this.myPlaneBullet[i].thunderBulletPosY <= EnemyPlanes[j].enemyPosY + EnemyPlanes[j].enemyHeight) {
+
+			// 				//防止多次碰撞，让子弹的Y轴等于飞机的Y轴最大值(还是无法解决该问题，偶尔还会产生多次碰撞)
+			// 				// myPlaneBullet[i].bulletPosY = EnemyPlanes[j].enemyPosY;
+
+			// 				//清除该子弹的计时器
+			// 				// clearInterval(myPlaneBullet[i].thunderBulletTimer);
+
+			// 				//移除该子弹(最大BUG，一旦执行这段，会发生一系列报错，但程序还能正常执行)
+			// 				// thunderBulletEle.removeChild(myPlaneBullet[i].bulletSum);
+			// 				this.myPlaneBullet[i].thunderBulletPosX = -1500;
+			// 				this.myPlaneBullet[i].thunderBulletPosY = -1500;
+
+			// 				//敌机的生命值减少
+			// 				EnemyPlanes[j].enemyHP--;
+
+			// 				//敌机的生命值为0，飞机爆炸并消失，持续0.2秒
+			// 				if(EnemyPlanes[j].enemyHP == 0) {
+			// 					this.EnemyPlaneFocus = EnemyPlanes[j];
+			// 					EnemyPlanes[j].enemyPlaneEles.style.background = "url(images/hit1.png) 0 0 no-repeat";
+			// 					EnemyPlanes[j].enemyPlaneEles.style.backgroundSize = "contain";
+			// 					EnemyPlanes[j].enemyHP = enemyHP;
+
+			// 					//设置分数
+			// 					if(EnemyPlaneFocus.enemyPosY >= 0) {
+			// 						score += 100;
+			// 						scoreEle.innerHTML = score;
+			// 					}
+
+			// 					//造成延迟（会产生BUG，爆炸的样子还在）
+			// 					setTimeout(function() {
+			// 						thunderBulletImpact_this.ThunderBulletImpactFuction(enemyHP, url, size);
+			// 					}, 40);
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// }
+		}
+
+		ThunderBulletImpactEnemyPlane.prototype.ThunderBulletImpactFuction = function(enemyHP, url, size) {
+
+			//暂时不做移除（无法持续增加新的敌机，所以仅做重新设定位置处理）
+			this.EnemyPlaneFocus.enemyPlaneEles.style.background = url;
+			this.EnemyPlaneFocus.enemyPlaneEles.style.backgroundSize = size;
+			this.EnemyPlaneFocus.enemyPosX = Math.floor(Math.random() * 541);
+			this.EnemyPlaneFocus.enemyPosY = Math.floor(Math.random() * -1000 - 100);
+			this.EnemyPlaneFocus.enemySpeedX = Math.floor(Math.random() * 5) * EnemyPlaneFocus.enemyPlaneDirection;
+			this.EnemyPlaneFocus.enemySpeedY = Math.floor(Math.random() * 3 + 2);
+		}
+
+		//雷霆战机的子弹持续运动
+		thunderBullet.prototype.thunderBulletMove = function(thunderBulletElement, thunderBulletsEles) {
+			this.thunderBulletsEles = thunderBulletsEles;
+			this.thunderBulletElement = thunderBulletElement;
+			this.thunderBulletPosY -= this.thunderBulletSpeed;
+			this.thunderBulletElement.style.left = this.thunderBulletPosX + "px";
+			this.thunderBulletElement.style.top = this.thunderBulletPosY + "px";
+			if(parseInt(getStyle(this.thunderBulletElement, "top")) <= 0) {
+				this.thunderBulletsEles.removeChild(this.thunderBulletElement);
+			}
+		}
+		//设置雷霆战机的生命值
+		function setThunderHP(length) {
+			this.thunderHPEle = document.getElementsByTagName("li");
+			for(var j = 0; j < 5; j++) {
+				thunderHPEle[j].style.display = "none";
+			}
+			for(var i = 0; i < length; i++)
+			{
+				thunderHPEle[i].style.display = "block";
+			}
+		}
+
+		//设置敌机的基本值
+		function EnemyPlane(element, enemyHP, enemyPlaneEle) {
+			var EnemyPlane_this = this;
+			this.enemyPlaneEles = document.createElement(element);
+			this.enemyPlaneEle = document.getElementById(enemyPlaneEle);
+			this.enemyPlaneEle.appendChild(this.enemyPlaneEles);
+
+			this.enemyPlaneDirection = Math.pow(-1, Math.floor(Math.random() * 100));			//设置敌机移动的方向
+			this.enemySpeedX = Math.floor(Math.random() * 5) * this.enemyPlaneDirection;		//设置敌机X轴的速度
+			this.enemySpeedY = Math.floor(Math.random() * 3 + 2);								//设置敌机Y轴的速度
+			this.enemyHP = enemyHP;																//设置敌机的生命值
+			this.enemyWidth = this.enemyPlaneEles.offsetWidth;									//获取敌机的宽度
+			this.enemyHeight = this.enemyPlaneEles.offsetHeight;								//获取敌机的高度
+
+			//设置新的敌机位置
+			this.enemyPosX = Math.floor(Math.random() * 541);
+			this.enemyPosY = Math.floor(Math.random() * -1000 - 100);
+			// this.enemyPosX = parseInt(getStyle(this.enemyPlaneEle, "left"));
+			// this.enemyPosY = parseInt(getStyle(this.enemyPlaneEle, "top"));
+
+			//使敌机持续运动
+			this.enemyPlaneTimer = setInterval(function() {
+				EnemyPlane_this.enemyPlaneMove(this.enemyHP);
+			}, 16)
+		}
+
+		//设置敌机的运动
+		EnemyPlane.prototype.enemyPlaneMove = function(enemyHP) {
+			this.enemyPlaneChangeDirection = -1;
+			this.enemyPosX += this.enemySpeedX;
+			this.enemyPosY += this.enemySpeedY;
+
+			//判断敌机是否超出边界
+			if(this.enemyPosX >= 540 || this.enemyPosX < 0) {
+				this.enemySpeedX = this.enemySpeedX * this.enemyPlaneChangeDirection;
+			}
+			if(this.enemyPosY >= 860) {
+				this.enemyPosX = Math.floor(Math.random() * 541);
+				this.enemyPosY = Math.floor(Math.random() * -1000 - 100);
+				this.enemySpeedX = Math.floor(Math.random() * 5) * this.enemyPlaneDirection;
+				this.enemySpeedY = Math.floor(Math.random() * 3 + 2);
+				this.enemyHP = enemyHP;
+			}
+			this.enemyPlaneEles.style.left = this.enemyPosX + "px";
+			this.enemyPlaneEles.style.top = this.enemyPosY + "px";
+		}
+
+		//判断敌机是否撞击到雷霆战机(已解决)
+		function EnemyPlaneImpactThunder(EnemyPlanesNum, EnemyPlanes, enemyHP, url, size, scoreEle) {
+
+			var enemyPlaneImpact_this = this;
+			this.scoreEle = document.getElementById(scoreEle);
+			this.score = parseInt(this.scoreEle.innerHTML);
+			for(var i = 0; i < EnemyPlanesNum; i++) {
+				if((myPlane.thunderPosX >= EnemyPlanes[i].enemyPosX && myPlane.thunderPosX <= EnemyPlanes[i].enemyPosX + EnemyPlanes[i].enemyWidth) || (myPlane.thunderPosX + myPlane.thunderPlaneWidth >= EnemyPlanes[i].enemyPosX && myPlane.thunderPosX + myPlane.thunderPlaneWidth <= EnemyPlanes[i].enemyPosX + EnemyPlanes[i].enemyWidth)) {
+					if((myPlane.thunderPosY >= EnemyPlanes[i].enemyPosY && myPlane.thunderPosY <= EnemyPlanes[i].enemyPosY + EnemyPlanes[i].enemyHeight) || myPlane.thunderPosY + myPlane.thunderPlaneHeight >= EnemyPlanes[i].enemyPosY && myPlane.thunderPosY + myPlane.thunderPlaneHeight <= EnemyPlanes[i].enemyPosY + EnemyPlanes[i].enemyHeight) {
+						this.EnemyPlaneFocus = EnemyPlanes[i];
+
+						//设置分数
+						if(EnemyPlanes[i].enemyPosY >= 0) {
+							this.score += 100;
+							this.scoreEle.innerHTML = this.score;
+						}
+
+						//当敌机触碰到雷霆战机时，敌机的Y坐标等于雷霆战机的Y坐标
+						EnemyPlanes[i].enemyPosY = myPlane.thunderPosY - myPlane.thunderHeight;
+
+						//设置飞机爆炸的图片
+						EnemyPlanes[i].enemyPlaneEles.style.background = "url(images/hit1.png) 0 0 no-repeat";
+						EnemyPlanes[i].enemyPlaneEles.style.backgroundSize = size;
+
+						myPlane.thunderHP--;
+
+						//设置生命值
+						setThunderHP(myPlane.thunderHP);
+
+						setTimeout(function() {
+							enemyPlaneImpact_this.EnemyPlaneFocusFunction(enemyHP, url, size);
+						}, 200);
+					}
+				}
+			}
+		}
+		EnemyPlaneImpactThunder.prototype.EnemyPlaneFocusFunction = function(enemyHP, url, size) {
+			this.EnemyPlaneFocus.enemyHP = enemyHP;
+			// worldEle.removeChild(EnemyPlanes[i].enemyPlaneEle)
+
+			//因为无法删除enemyPlane对象，所以采用
+			this.EnemyPlaneFocus.enemyPlaneEles.style.background = url;
+			this.EnemyPlaneFocus.enemyPlaneEles.style.backgroundSize = size;
+			this.EnemyPlaneFocus.enemyPosX = Math.floor(Math.random() * 541);
+			this.EnemyPlaneFocus.enemyPosY = -100;
+		}
+
+		//主函数GameMain
+		function GameMain(firstEnemyPlanesNum) {
+			var GameMain_this = this;
+			maingaming = new mainGaming("worlds", 0);
+
+			myPlane = new ThunderPlane("thunderPlanes", 3, 3, maingaming.worldEle.offsetWidth, maingaming.worldEle.offsetHeight, "thunderBullets", "span", 5);
+
+			//设置原始敌机
+			this.firstEnemyPlanes = [];
+			for(var i = 0; i < firstEnemyPlanesNum; i++) {
+				this.firstEnemyPlanes[i] = new EnemyPlane("span", 1, "enemyPlanes");
+			}
+			this.startTimer = setInterval(function() {
+				GameMain_this.gameStart(firstEnemyPlanesNum);
+			}, 16);
+
+		}
+		GameMain.prototype.gameStart = function(firstEnemyPlanesNum) {
+
+			//控制战机发射子弹
+			document.onkeyup = function(e) {
+				myPlane.thunderPlaneBulletMove(e);
+
+				//设置子弹的new值
+			}
+
+			//判断敌机是否碰撞到雷霆战机
+			new EnemyPlaneImpactThunder(firstEnemyPlanesNum, this.firstEnemyPlanes, 1, "url(images/enemyPlane1.png) 0 0 no-repeat", "contain", "score");
+			// EnemyPlaneImpactThunder(normalEnemyPlanesNum, normalEnemyPlanes, 2, "url(images/enemyPlane2.png) 0 0 no-repeat", "contain", "contain");
+			// EnemyPlaneImpactThunder(fastEnemyPlanesNum, fastEnemyPlanes, 5, "url(images/enemyPlane3.png) 0 0 no-repeat", "contain", "contain");
+			ThunderBulletImpactEnemyPlane(4, "thunderPlanes", "thunderBullets", "span", firstEnemyPlanesNum, this.firstEnemyPlanes, 1, "url(images/enemyPlane1.png 0 0 no-repeat", "contain");
+		}
+		new GameMain(5);
+	</script>
+</body>
+</html>
